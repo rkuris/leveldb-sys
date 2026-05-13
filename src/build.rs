@@ -62,7 +62,9 @@ fn build_leveldb(snappy_prefix: Option<PathBuf>) {
     let outdir = env::var("OUT_DIR").unwrap();
     let libdir = Path::new(&outdir).join(LIBDIR);
 
-    env::set_var("NUM_JOBS", num_cpus::get().to_string());
+    unsafe {
+        env::set_var("NUM_JOBS", num_cpus::get().to_string());
+    }
     let mut config =
         cmake::Config::new(Path::new("deps").join(format!("leveldb-{LEVELDB_VERSION}")));
     config
@@ -74,8 +76,13 @@ fn build_leveldb(snappy_prefix: Option<PathBuf>) {
         let ldflags = format!("/LIBPATH:{}", snappy_prefix.join(LIBDIR).display());
         #[cfg(not(target_env = "msvc"))]
         let ldflags = format!("-L{}", snappy_prefix.join(LIBDIR).display());
-
-        env::set_var("LDFLAGS", ldflags);
+    
+        unsafe {
+            env::set_var(
+                "LDFLAGS",
+                ldflags
+            );
+        }
 
         config
             .define("HAVE_SNAPPY", "ON")

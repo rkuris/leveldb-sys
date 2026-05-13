@@ -42,7 +42,7 @@ pub enum Compression {
   Snappy = 1
 }
 
-extern "C" {
+unsafe extern "C" {
     // DB operations
 
     /// Open the database at path `name` with the configurations set in `options`.
