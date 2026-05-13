@@ -36,7 +36,8 @@ fn build_snappy() -> PathBuf {
 
     let libdir = Path::new(&outdir).join(LIBDIR);
 
-    env::set_var("NUM_JOBS", num_cpus::get().to_string());
+    // SAFETY: build script runs single-threaded before any other code observes the environment.
+    unsafe { env::set_var("NUM_JOBS", num_cpus::get().to_string()) };
     let dest_prefix = cmake::Config::new(snappy_dir)
         .define("BUILD_SHARED_LIBS", "OFF")
         .define("SNAPPY_BUILD_TESTS", "OFF")
